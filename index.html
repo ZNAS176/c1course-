@@ -62,9 +62,13 @@ function showSentenceQuiz(){
   let q=sentenceQuiz.qs[sentenceQuiz.i], correct=q.item;
   let distractors=[...sentenceQuiz.pool].filter(x=>x.item.word!==correct.word).sort(()=>Math.random()-.5).slice(0,3).map(x=>x.item);
   let opts=[correct,...distractors].sort(()=>Math.random()-.5);
-  main.innerHTML=`<div class="screen"><div class="matchscore"><span class="muted">✍️ Completa la frase</span><b>${sentenceQuiz.i+1}/${sentenceQuiz.qs.length}</b></div><div class="panel"><div class="sentencebox">${esc(q.blank)}</div><p class="muted center">Selecciona la expresión que completa el ejemplo original.</p><div class="sentenceopts">${opts.map((x,i)=>`<button class="sentencebtn" onclick="answerSentence(this,${JSON.stringify(x.word)},${JSON.stringify(correct.word)})">${esc(x.word)}</button>`).join('')}</div><div id="sentenceMsg" class="center muted" style="margin-top:12px"></div></div></div>`;
+  sentenceQuiz.currentOptions=opts;
+  sentenceQuiz.currentCorrect=correct.word;
+  main.innerHTML=`<div class="screen"><div class="matchscore"><span class="muted">✍️ Completa la frase</span><b>${sentenceQuiz.i+1}/${sentenceQuiz.qs.length}</b></div><div class="panel"><div class="sentencebox">${esc(q.blank)}</div><p class="muted center">Selecciona la expresión que completa el ejemplo original.</p><div class="sentenceopts">${opts.map((x,i)=>`<button type="button" class="sentencebtn" onclick="answerSentence(this,${i})">${esc(x.word)}</button>`).join('')}</div><div id="sentenceMsg" class="center muted" style="margin-top:12px"></div></div></div>`;
 }
-function answerSentence(btn,chosen,correct){
+function answerSentence(btn,optIndex){
+  let chosen=sentenceQuiz.currentOptions[optIndex].word;
+  let correct=sentenceQuiz.currentCorrect;
   document.querySelectorAll('.sentencebtn').forEach(b=>b.disabled=true);
   let ok=chosen===correct;
   if(ok){sentenceQuiz.score++;btn.classList.add('matched');$('#sentenceMsg').textContent='✓ Correcto';}
